@@ -1,0 +1,51 @@
+# idk — configuration
+#
+# Copy this file to .idkonfig. Resolution:
+#   cwd .idkonfig (per-project) → skill-dir .idkonfig (global) → hardcoded defaults
+#
+# Format: KEY=value, one per line. Lines starting with # are ignored.
+
+# Output language.
+# - "mirror" (default): follows the language the user wrote in most recently
+# - "pt-BR" / "en" / "es" / etc: pins to one language
+LANGUAGE=mirror
+
+# Where to store session live docs.
+# - "." (default): loose files in the cwd where the skill was invoked
+# - Relative path: resolved from the cwd. Ex: ./brainstorms/
+# - Absolute path: used as is. Ex: ~/.claude/idk-sessions/
+# Files always follow the `idk-[topic].md` pattern, loose inside this directory,
+# unless the user explicitly asks to create a subfolder.
+SESSIONS_DIR=.
+
+# Starting mode when opening a session.
+# - "adaptive" (default): Socratic→framework→Socratic depending on problem shape
+# - "adversarial": starts in sparring mode (rare — only if you always want pushback)
+DEFAULT_MODE=adaptive
+
+# Tone override. Leave blank to use the skill's default (direct, opinionated,
+# peer-to-peer). Options:
+# - more_terse: shorter replies, less context
+# - more_warm: a bit more warmth/encouragement (still not motivational coaching)
+# - more_blunt: even more direct, no hedging
+TONE=
+
+# If true, apply framework directly when confidence is High (problem shape is
+# canonical — ex: "I'm torn between A and B" becomes pros/cons without asking).
+# If false, always offer before applying. True is the default to reduce friction —
+# you can redirect by saying "switch" or "explore more".
+AUTO_APPLY_FRAMEWORKS=true
+
+# Preferred framework per domain. When set, the skill uses this framework when
+# confidence is High and the domain matches. Leave blank to use the default
+# heuristic.
+# Valid values: 5-whys, mece, swot, pre-mortem, scamper, eisenhower,
+# decision-tree, pros-cons, jtbd, first-principles, inversion, wheel-of-life.
+#
+# Tip: after a few sessions, run "idk stats" — the skill looks at your history
+# and suggests what to put here based on what you used most and liked.
+DEFAULT_FRAMEWORK_TECHNICAL=
+DEFAULT_FRAMEWORK_PERSONAL=
+DEFAULT_FRAMEWORK_WRITING=
+DEFAULT_FRAMEWORK_BUSINESS=
+DEFAULT_FRAMEWORK_GENERIC=
