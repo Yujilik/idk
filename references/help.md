@@ -1,6 +1,6 @@
 # idk — help
 
-Brainstorming partner. Asks the right questions at the right time to unstick thinking. Keeps a live document of the conversation at `idk-[topic].md` (loose file in whatever directory you're working in, by default).
+Brainstorming partner. Asks the right questions at the right time to unstick thinking. Keeps a live document at `.idk/idk-[topic].md` by default (the `.idk/` directory is git ignored).
 
 Note: this skill is written in English but speaks your language by default (`LANGUAGE=mirror`). If you write in Portuguese, it answers in Portuguese, names sections in Portuguese, etc.
 
@@ -14,9 +14,9 @@ Talk naturally. Any of these opens a session:
 - "brainstorm about W"
 - "I need to decide between A and B"
 
-If the current directory already has sessions (`idk-*.md`), the skill first lists what it found and asks whether to continue one or open a new one. If there are none, it asks for a 2-4 word topic and creates `idk-[topic].md` in the directory you're in.
+The skill first lists sessions in `.idk/` (or your configured `SESSIONS_DIR`) and asks whether to continue one or open a new one. If there are none, it asks for a 2-4 word topic and creates `.idk/idk-[topic].md`.
 
-Session files are **always loose** (one markdown per topic, directly in the directory) unless you explicitly ask to organize into a subfolder.
+Session files are **always loose** (one markdown per topic, directly in the session directory) unless you explicitly ask to organize into a subfolder.
 
 ## Modes
 
@@ -56,7 +56,7 @@ Want to jump ahead? Ask explicitly: "run 5 whys", "apply pre-mortem". Prefer to 
 See `.idkonfig.example` at the skill root. Main variables:
 
 - `LANGUAGE` — output language (default: mirror yours)
-- `SESSIONS_DIR` — where to look for and save docs (default: `.` = cwd)
+- `SESSIONS_DIR` — where to look for and save docs (default: `.idk` in cwd; git ignored)
 - `DEFAULT_MODE` — `adaptive` or `adversarial`
 - `TONE` — optional tone override
 - `AUTO_APPLY_FRAMEWORKS` — `true` applies on high confidence; `false` always offers

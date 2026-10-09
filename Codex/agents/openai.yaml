@@ -1,0 +1,4 @@
+interface:
+  display_name: "idk"
+  short_description: "Think through ideas and decisions with a live document"
+  default_prompt: "Use $idk to help me think through an idea and keep a live session document."

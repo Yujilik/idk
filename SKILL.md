@@ -141,7 +141,7 @@ Each session has a markdown file that's updated in real time as you talk. It's t
 
 Whenever the user fires a brainstorm trigger, **first**:
 
-1. List `idk-*.md` files in the current working directory (or in `SESSIONS_DIR` if configured). Use `Glob` with pattern `idk-*.md`.
+1. List `idk-*.md` files in `SESSIONS_DIR` (default: `.idk/` in the current working directory). Use `Glob` with pattern `[SESSIONS_DIR]/idk-*.md`.
 2. **If existing sessions are found:**
    - Extract the topic from the filename and the state from each file's header (they're small, reading is cheap).
    - Offer choices:
@@ -155,13 +155,13 @@ Whenever the user fires a brainstorm trigger, **first**:
      ```
    - If the user picks one → jump to "Resuming" below.
    - If the user picks new → proceed with creation below.
-3. **If none found or user chose new:** ask for a topic in 2-4 words, generate a kebab-case slug, create `idk-[slug].md` (loose file in cwd by default).
+3. **If none found or user chose new:** ask for a topic in 2-4 words, generate a kebab-case slug, create `[SESSIONS_DIR]/idk-[slug].md` (default: `.idk/` in cwd).
 
 ### Creating a new session
 
 1. Ask: *"How should I name this topic, in 2-4 words?"* (short, becomes the filename).
 2. Generate a kebab-case slug. Ex: "Refactoring the payment API" → `refactor-payment-api`.
-3. Resolve path: `[SESSIONS_DIR]/idk-[slug].md`. By default `SESSIONS_DIR=.` (cwd). The file is **always loose (a single markdown in the directory)** unless the user explicitly asks to put it in a folder ("create a dir for this", "put it in a folder").
+3. Resolve path: `[SESSIONS_DIR]/idk-[slug].md`. By default `SESSIONS_DIR=.idk` (in cwd). Create the directory if needed. The file is **always loose (a single markdown in the directory)** unless the user explicitly asks to put it in a folder ("create a dir for this", "put it in a folder").
 4. If the file already exists (slug collision), ask whether to continue the existing one or create a variant (`idk-[slug]-2.md`).
 5. Use the template that matches the detected domain, from `references/templates.md`. Translate section headers to the user's current language as you write.
 
@@ -227,7 +227,7 @@ The answer goes into the doc as `> **Final note:**`. This feeds cross-session te
 
 Trigger: "idk stats", "my frameworks", "what do I use most" (or PT equivalents).
 
-1. `Glob` for `idk-*.md` in `SESSIONS_DIR` (cwd by default).
+1. `Glob` for `idk-*.md` in `SESSIONS_DIR` (`.idk/` in cwd by default).
 2. For each file, parse the `> **Frameworks used:** ...` and `> **Final note:** ...` lines.
 3. Aggregate: framework → (N sessions, N positive ratings).
 4. Show a table: framework | usage | approval.
@@ -278,7 +278,7 @@ Resolution: **cwd `.idkonfig` (per-project) → skill-dir `.idkonfig` (global) �
 | Variable | Default | What it does |
 |----------|---------|--------------|
 | `LANGUAGE` | mirror | Output language. `mirror` = follow the user's language. Or fixed: `pt-BR`, `en`, etc. |
-| `SESSIONS_DIR` | `.` | Where to look for and save live docs. Default: cwd (loose files). |
+| `SESSIONS_DIR` | `.idk` | Where to look for and save live docs. Relative paths are from cwd; `.idk/` is git ignored. |
 | `DEFAULT_MODE` | `adaptive` | Starting mode. `adaptive` or `adversarial` (rare). |
 | `TONE` | (empty) | Tone override. Ex: `more_terse`, `more_warm`, `more_blunt`. Default is the skill's. |
 | `AUTO_APPLY_FRAMEWORKS` | `true` | If `true`, apply framework directly when confidence is High. If `false`, always offer first. |
@@ -339,4 +339,4 @@ Trigger: "idk help" / `/idk help` / "ajuda idk" → load `references/help.md`, p
 | `references/adversarial.md` | Adversarial mode rules |
 | `references/templates.md` | Live-doc templates per domain |
 | `references/help.md` | Help text |
-| `idk-*.md` (in cwd or `SESSIONS_DIR`) | Session live docs (user's output, not the skill's) |
+| `idk-*.md` (in `SESSIONS_DIR`, `.idk/` in cwd by default) | Session live docs |
