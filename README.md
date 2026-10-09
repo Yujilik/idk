@@ -1,6 +1,6 @@
 # idk
 
-A brainstorming partner skill for Claude Code and ClaudeAI. It asks the right questions at the right moment to unstick your thinking, and keeps a live document of the conversation as you go.
+A brainstorming partner skill for Claude Code, Codex, and ClaudeAI. It asks the right questions at the right moment to unstick your thinking, and keeps a live document of the conversation as you go.
 
 The name comes from "I don't know", which is honestly where most good brainstorm sessions start.
 
@@ -26,24 +26,30 @@ The skill itself is written in English (so more people can read and contribute),
 idk/
 ├── SKILL.md              # Claude Code version (filesystem based)
 ├── README.md             # This file
-├── .idkonfig.example     # Config template (Claude Code only)
-├── references/           # Loaded on demand by Claude Code version
+├── .idkonfig.example     # Shared config template for Claude Code and Codex
+├── references/           # Shared framework, template, adversarial, and help docs
 │   ├── frameworks.md
 │   ├── adversarial.md
 │   ├── templates.md
 │   └── help.md
+├── Codex/
+│   ├── SKILL.md          # Codex version (filesystem based)
+│   ├── agents/openai.yaml
+│   └── references → ../references, .idkonfig.example → shared config
+├── .agents/skills/idk → ../../Codex  # Repo-local Codex discovery
 └── ClaudeAI/
     └── SKILL.md          # claude.ai version (self contained, artifact based)
 ```
 
-There are two flavors of the skill in this repo:
+There are three flavors of the skill in this repo:
 
-- **Claude Code version** (root `SKILL.md`): uses the filesystem. Session live docs are loose `idk-[topic].md` files in whatever directory you invoked the skill from. Supports cross session features (list, resume, stats) via `Glob`. References load on demand.
+- **Claude Code version** (root `SKILL.md`): uses the filesystem. Session live docs are saved under `.idk/` in the working directory by default; `.idk/` is git ignored. Supports cross session features (list, resume, stats) via `Glob`. References load on demand.
+- **Codex version** ([`Codex/SKILL.md`](Codex/SKILL.md)): uses Codex's filesystem tools and the same session files, references, and `.idkonfig` settings as Claude Code. `.agents/skills/idk` makes it discoverable automatically from this repository.
 - **claude.ai version** ([`ClaudeAI/SKILL.md`](ClaudeAI/SKILL.md)): self contained in a single file with inline catalogs. Uses **artifacts** for the live doc because claude.ai doesn't have a per user filesystem. One conversation equals one session. No cross session features.
 
 ## How it works
 
-1. **Opens a session.** Talk to it like a person. Stuff like "help me think about X" or "I'm stuck on Y" works great. `idk` first checks for existing `idk-*.md` files in the current directory. If it finds any, it lists them and asks if you want to continue one. If not, it asks for a 2 to 4 word topic and creates `idk-[topic].md`.
+1. **Opens a session.** Talk to it like a person. Stuff like "help me think about X" or "I'm stuck on Y" works great. `idk` first checks for existing `idk-*.md` files in `.idk/` (or your configured `SESSIONS_DIR`). If it finds any, it lists them and asks if you want to continue one. If not, it asks for a 2 to 4 word topic and creates `idk-[topic].md` there.
 2. **Adaptive conversation.** It starts Socratic to map out what's going on. When the shape of the problem is obvious, the skill **just applies a framework** (5 Whys when you're vaguely unhappy, weighted pros and cons when you're torn between A and B, pre mortem when the plan is basically decided, etc). You can always redirect with "switch" or "explore more". When things are ambiguous, it offers you 2 or 3 options. Goes back to Socratic whenever new ambiguity shows up.
 3. **Adversarial mode, if you want it.** Say "challenge this", "play devil's advocate", or "push back on me" to flip into sparring mode. `idk` will poke at your assumptions, look for holes, and call out fallacies. Exit with "pause" whenever you've had enough.
 4. **Live doc.** The `idk-[topic].md` file updates on every substantive turn. It holds the problem, context, options you've considered, current (tentative) decision, open questions, and next steps.
@@ -69,7 +75,13 @@ If it guesses the domain wrong, it'll switch templates without losing anything y
 
 1. Put the `idk/` folder wherever Claude Code loads skills from.
 2. Claude picks it up automatically via `SKILL.md` and its frontmatter.
-3. Open a conversation in any working directory and use one of the triggers listed in [references/help.md](references/help.md). Session files get created in the cwd.
+3. Open a conversation in any working directory and use one of the triggers listed in [references/help.md](references/help.md). Session files get created in `.idk/` under the cwd by default.
+
+### Codex (CLI / IDE)
+
+1. Open this repository in Codex; the skill is available through its repo-local `.agents/skills` discovery path.
+2. Run `/skills` to see it or invoke it with `$idk` followed by a request, such as `$idk help me think about changing teams`.
+3. Session files are created in `.idk/` under the working directory by default. Use the same `.idkonfig` options as Claude Code to change the session directory, language, or framework preferences.
 
 ### claude.ai (web and mobile, including iOS and Android)
 
@@ -85,7 +97,7 @@ If it guesses the domain wrong, it'll switch templates without losing anything y
 See [.idkonfig.example](.idkonfig.example). Supported variables:
 
 - `LANGUAGE`: output language (default: `mirror`, follows you)
-- `SESSIONS_DIR`: where to save docs (default: `.`, your cwd)
+- `SESSIONS_DIR`: where to save docs (default: `.idk/` under your cwd; git ignored)
 - `DEFAULT_MODE`: `adaptive` or `adversarial` (default: `adaptive`)
 - `TONE`: optional override (`more_terse`, `more_warm`, `more_blunt`)
 - `AUTO_APPLY_FRAMEWORKS`: `true` (default) applies directly on high confidence, `false` always asks first
